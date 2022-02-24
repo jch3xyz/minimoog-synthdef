@@ -1,6 +1,6 @@
 (
 SynthDef(\minimoog,{
-	arg out, pan, freq=80, osc1wf=0, osc2wf=0, osc3wf=0, osc1pw=0.5, osc2pw=0.5, osc3pw=0.5, osc1range=0, osc2range=0, osc3range=0, osc2tune=0, osc3tune=0, osc1vol=0.5, osc2vol=0.5, osc3vol=0.5, osc1on=1, osc2on=0, osc3on=0, noisetype=0, noisevol=0.5, noiseon=0, glide=0, cutoff=20000, res=0, filtatk=0.01, filtdec=0.3, filtsus=0.5;
+	arg out, pan, freq=80, osc1wf=0, osc2wf=0, osc3wf=0, osc1pw=0.5, osc2pw=0.5, osc3pw=0.5, osc1range=0, osc2range=0, osc3range=0, osc2tune=0, osc3tune=0, osc1vol=0.5, osc2vol=0.5, osc3vol=0.5, osc1on=1, osc2on=0, osc3on=0, noisetype=0, noisevol=0.5, noiseon=0, glide=0, cutoff=20000, res=0, filtatk=0.01, filtdec=0.3, filtsus=0.5, envamt=1;
 
 	var sig;
 
@@ -10,22 +10,22 @@ SynthDef(\minimoog,{
 	var osc3oct = (12 * osc3range).midicps;
 
 	//selecting waveforms, octave, and detune
-	var osc1 = SelectX.ar(osc1wf,
+	var osc1 = Select.ar(osc1wf,
 		[SinOsc.ar(freq + osc1oct),
 			Saw.ar(freq + osc1oct),
 			Pulse.ar(freq + osc1oct, osc1pw)]);
 
-	var osc2 = SelectX.ar(osc2wf,
+	var osc2 = Select.ar(osc2wf,
 		[SinOsc.ar(freq + osc2oct + osc2tune.midicps),
 			Saw.ar(freq + osc2oct + osc2tune.midicps),
 			Pulse.ar(freq + osc2oct + osc2tune.midicps, osc2pw)]);
 
-	var osc3 = SelectX.ar(osc3wf,
+	var osc3 = Select.ar(osc3wf,
 		[SinOsc.ar(freq + osc3oct + osc3tune.midicps),
 			Saw.ar(freq + osc3oct + osc3tune.midicps),
 			Pulse.ar(freq + osc3oct + osc3tune.midicps, osc3pw)]);
 
-	var noise = SelectX.ar(noisetype,
+	var noise = Select.ar(noisetype,
 		[WhiteNoise.ar,
 			PinkNoise.ar]);
 
@@ -38,7 +38,9 @@ SynthDef(\minimoog,{
 	 sig = osc1 + osc2 + osc3 + noise;
 
 	//filter envelope
-	cutoff = cutoff * EnvGen.kr(Env.adsr(filtatk, filtdec, filtsus, filtdec));
+	var filtenv = EnvGen.kr(Env.adsr(filtatk, filtdec, filtsus, filtdec)) * envamt;
+
+	cutoff = cutoff * filtenv;
 
 	//filter and glide
 	sig = MoogLadder.ar(sig, cutoff, res).lag(glide);
