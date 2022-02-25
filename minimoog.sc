@@ -4,7 +4,7 @@ SynthDef(\minimoog,{
 
 	var sig;
 
-	//selecting octaves
+	//octave offsets
 	var osc1oct = (12 * osc1range).midicps;
 	var osc2oct = (12 * osc2range).midicps;
 	var osc3oct = (12 * osc3range).midicps;
@@ -35,7 +35,7 @@ SynthDef(\minimoog,{
 	osc3 = osc3 * osc3on * osc3vol;
 	noise = noise * noiseon * noisevol;
 
-	 sig = osc1 + osc2 + osc3 + noise;
+	sig = osc1 + osc2 + osc3 + noise;
 
 	//filter envelope
 	var filtenv = EnvGen.kr(Env.adsr(filtatk, filtdec, filtsus, filtdec)) * envamt;
